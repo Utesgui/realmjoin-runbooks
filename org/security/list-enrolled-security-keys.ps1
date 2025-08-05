@@ -25,29 +25,9 @@
 
 .INPUTS
 RunbookCustomization: {
-    "Parameters": {
-        "Mode": {
-            "DisplayName": "Display Mode",
-            "Description": "Choose how to display the security keys information",
-            "Required": true,
-            "SelectSimple": {
-                "Per Security Key": "PerKey",
-                "Per User": "PerUser"
-            }
-        },
-        "UserList": {
-            "DisplayName": "Filter Users (Optional)",
-            "Description": "Comma-separated list of user emails to filter results. Leave empty to show all users.",
-            "Required": false
-        },
-        "ShowSharedKeyUsers": {
-            "DisplayName": "Show Shared Key Users",
-            "Description": "In 'Per User' mode, show other users who have the same security key enrolled",
-            "Required": false,
-            "SelectSimple": {
-                "Yes": true,
-                "No": false
-            },
+    "ParameterList": [
+        {
+            "Name": "ShowSharedKeyUsers",
             "Customization": {
                 "Conditions": [
                     {
@@ -57,10 +37,11 @@ RunbookCustomization: {
                 ]
             }
         },
-        "CallerName": {
+        {
+            "Name": "CallerName",
             "Hide": true
         }
-    }
+    ]
 }
 #>
 
@@ -70,16 +51,20 @@ RunbookCustomization: {
 param (
     [Parameter(Mandatory = $true)]
     [ValidateSet("PerKey", "PerUser")]
+    [ValidateScript( { Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process; Use-RJInterface -DisplayName "Display Mode" -Description "Choose how to display the security keys information" -Select @{"Per Security Key" = "PerKey"; "Per User" = "PerUser"} } )]
     [string]$Mode,
     
     [Parameter(Mandatory = $false)]
+    [ValidateScript( { Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process; Use-RJInterface -DisplayName "Filter Users (Optional)" -Description "Comma-separated list of user emails to filter results. Leave empty to show all users." } )]
     [string]$UserList = "",
     
     [Parameter(Mandatory = $false)]
+    [ValidateScript( { Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process; Use-RJInterface -DisplayName "Show Shared Key Users" -Description "In 'Per User' mode, show other users who have the same security key enrolled" } )]
     [bool]$ShowSharedKeyUsers = $false,
     
     # CallerName is tracked purely for auditing purposes
     [Parameter(Mandatory = $true)]
+    [ValidateScript( { Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process; Use-RJInterface -DisplayName "Caller Name" -Hide } )]
     [string]$CallerName
 )
 
